@@ -7,6 +7,7 @@ import Spinner from "../components/Spinner";
 import { HomePageVideos } from "../Type";
 import { useAppDispatch, useAppSelector } from "../store/hook";
 import { getHomePageVideos } from "../store/reducers/getHomePageVideos";
+import { clearVideos } from "../store";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -14,6 +15,12 @@ const Home = () => {
 
   useEffect(() => {
     dispatch(getHomePageVideos(false));
+  }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearVideos());
+    };
   }, [dispatch]);
 
   return (
