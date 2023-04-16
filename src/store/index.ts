@@ -1,7 +1,10 @@
 import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
+
 import { InitialState } from "../Type";
 import { getHomePageVideos } from "./reducers/getHomePageVideos";
+import { getRecommendedVideos } from "./reducers/getRecommendedVideo";
 import { getSearchPageVideos } from "./reducers/getSearchPageVideos";
+import { getVideoDetails } from "./reducers/getVideoDetails";
 
 const initialState: InitialState = {
   videos: [],
@@ -12,12 +15,13 @@ const initialState: InitialState = {
   recommendedVideos: [],
 };
 
-const YouTubeSlice = createSlice({
+const YoutubeSlice = createSlice({
   name: "youtubeApp",
   initialState,
   reducers: {
     clearVideos: (state) => {
-      (state.videos = []), (state.nextPageToken = null);
+      state.videos = [];
+      state.nextPageToken = null;
     },
     changeSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
@@ -35,17 +39,23 @@ const YouTubeSlice = createSlice({
       state.videos = action.payload.parsedData;
       state.nextPageToken = action.payload.nextPageToken;
     });
+    builder.addCase(getVideoDetails.fulfilled, (state, action) => {
+      state.currentPlaying = action.payload;
+    });
+    builder.addCase(getRecommendedVideos.fulfilled, (state, action) => {
+      state.recommendedVideos = action.payload.parsedData;
+    });
   },
 });
 
 export const store = configureStore({
   reducer: {
-    youtubeApp: YouTubeSlice.reducer,
+    youtubeApp: YoutubeSlice.reducer,
   },
 });
 
 export const { clearVideos, changeSearchTerm, clearSearchTerm } =
-  YouTubeSlice.actions;
+  YoutubeSlice.actions;
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
